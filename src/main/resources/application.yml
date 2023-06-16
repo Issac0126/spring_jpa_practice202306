@@ -13,9 +13,6 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: create #매번 전체 스키마를 재생성한다. 이후에는 update로 바꿔야 함.
-    properties:
-      hibernate:
-        format_sql: true # sql을 줄바꿈해서 깔끔하게 출력
     database: mysql # DB 계열 설정
 
   logging.level:
