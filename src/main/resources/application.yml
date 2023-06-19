@@ -12,7 +12,7 @@ spring:
     # 로그가 나올 때 어떤 DB에 맞게 나오는지 설정
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: create #매번 전체 스키마를 재생성한다. 이후에는 update로 바꿔야 함.
+      ddl-auto: update #매번 전체 스키마를 재생성한다. 이후에는 update로 바꿔야 함.
     database: mysql # DB 계열 설정
 
   logging.level:
