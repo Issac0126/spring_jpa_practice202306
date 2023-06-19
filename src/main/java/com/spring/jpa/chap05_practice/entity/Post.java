@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Setter @Getter
-@ToString(exclude = {"hash_tag"})
-@EqualsAndHashCode(of = "id")
-@NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"hashTags"})
+@EqualsAndHashCode(of = {"id"})
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "tbl_post")
@@ -26,21 +27,19 @@ public class Post {
     @Column(nullable = false)
     private String writer; //작성자
     @Column(nullable = false)
-    private String titlt;
+    private String title; //제목
 
     private String content; //내용
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime createDate;
+    private LocalDateTime createDate; //작성시간
 
     @UpdateTimestamp
     private LocalDateTime updateDate;
 
     @OneToMany(mappedBy = "post")
     private List<HashTag> hashTags = new ArrayList<>();
-
-
 
 }
 

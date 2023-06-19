@@ -26,7 +26,7 @@ public class PostDetailResponseDTO {
 
     public PostDetailResponseDTO(Post post){
         this.author = post.getWriter();
-        this.title = post.getTitlt();
+        this.title = post.getTitle();
         this.content = post.getContent();
         this.regDate = post.getCreateDate();
         //HashTag 같은 경우에는 가공해서 집어넣어야 한다. (리스크의 타입이 서로 다름.)
@@ -39,10 +39,6 @@ public class PostDetailResponseDTO {
                 .stream()                   //stream 객체를 받아옴. (컬렉션 데이터를 함수선언으로 처리할 수 있게 해주는 객체)
                 .map(HashTag::getTagName)   //스트림 내의 요소들에 함수가 적용된 결과를 새로운 요소로 맵핑
                 .collect(Collectors.toList()); //스크림 객체를 새로운 리스트의 형태로 리턴 -> this.hashTags에게 대입
-
-
-
-
     }
 
 

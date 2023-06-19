@@ -34,7 +34,7 @@ public class PostService {
         PageRequest pageable = PageRequest.of(
                 dto.getPage() - 1,
                 dto.getSize(),
-                Sort.by("createDate2").descending() //내림차로 정렬
+                Sort.by("createDate").descending() //내림차로 정렬
         );
 
         //데이터베이스에서 게시물 목록을 조회
@@ -50,13 +50,12 @@ public class PostService {
                     .collect(Collectors.toList());
 
 
-        // DB에서 조회한 정보(ENTITV)를 통해 JSON 형태에 맞는 DTO로 변환
-        PostListResponseDTO responseDTO = PostListResponseDTO.builder()
-            .count(detailList.size()) //총 게시물 수가 아니라 조회된 게시물의 수
-            .pageInfo(new PageResponseDTO(posts)) //생성자에게 Page정보가 담긴 객체를 그대로 전달함.
-            .posts(detailList)
-            .build();
+        // DB에서 조회한 정보(ENTITY)를 JSON 형태에 맞는 DTO로 변환
+        return PostListResponseDTO.builder()
+                .count(detailList.size()) // 총 게시물 수가 아니라 조회된 게시물 수
+                .pageInfo(new PageResponseDTO(posts)) //생성자에게 Page정보가 담긴 객체를 그대로 전달
+                .posts(detailList)
+                .build();
 
-        return responseDTO;
     }
 }

@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Setter
 @Getter
 @ToString(exclude = {"post"})
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = {"id"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -20,17 +20,12 @@ public class HashTag {
     @Column(name = "tag_no")
     private long id;
 
-    private String tagName; // 해시태그 이름
+    private String tagName; //해시태그 이름
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_no")
     private Post post;
 
 
-
-
-
-
-
-
 }
+
