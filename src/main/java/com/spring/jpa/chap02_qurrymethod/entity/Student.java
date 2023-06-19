@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class Student {
 
     @Id
-    @Column(name = "stu_id") //참고: 좌측과 같은 카멜케이스 <-> 스네이크케이스는 컬럼 작성할 필요 X.
+    @Column(name = "stu_id") //참고: 카멜케이스 <-> 스네이크케이스는 컬럼 작성할 필요 X.
     @GeneratedValue(generator = "uid") //하단 name으로 지목
     @GenericGenerator(strategy = "uuid", name="uid")
     private String id;
