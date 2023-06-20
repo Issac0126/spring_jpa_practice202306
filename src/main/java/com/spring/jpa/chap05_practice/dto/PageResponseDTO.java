@@ -11,6 +11,7 @@ public class PageResponseDTO<T> {
     private int startPage; // 시작페이지 : 1 
     private int endPage;  // 끝 페이지 : 10
     private int currentPage;  // 현재 페이지 : ?
+
     private boolean prev; //이전 페이지로
     private boolean next; //다음 페이지로
 

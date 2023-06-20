@@ -1,15 +1,22 @@
 package com.spring.jpa.chap05_practice.api;
 
-import com.spring.jpa.chap05_practice.dto.PageDTO;
-import com.spring.jpa.chap05_practice.dto.PostListResponseDTO;
+import com.spring.jpa.chap05_practice.dto.*;
 import com.spring.jpa.chap05_practice.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@Tag(name = "post API", description = "게시물 등록 및 수정 삭제 api")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -21,13 +28,13 @@ public class PostApiController {
         게시물 목록 조회 : /posts      - GET
         게시물 개별 조회 : /posts/{id} - GET
         게시물 등록 :      /posts      - POST
-        게시물 수정 :      /posts/{id} - PATCH
+        게시물 수정 :      /posts      - PUT, PATCH
         게시물 삭제 :      /posts/{id} - DELETE
      */
 
-    private PostService postService;
+    private final PostService postService;
 
-    @GetMapping //posts가 이미 위 리퀘스트 매핑에 있기 때문에 적을 필요X
+    @GetMapping //posts가 이미 위 리퀘스트 매핑에 있기 때문에 괄호 적을 필요X
     public ResponseEntity<?> list(PageDTO pageDTO) {
         log.info("/api/v1/posts?page{}&size{}", pageDTO.getPage(), pageDTO.getSize());
 
@@ -36,11 +43,120 @@ public class PostApiController {
         return ResponseEntity
                 .ok()
                 .body(dto);
+    } //게시물 목록 조회 END
+
+
+    @GetMapping("/{id}") //게시물 개별 조회
+    public ResponseEntity<?> detail(@PathVariable long id){
+        log.info("/api/v1/posts/{id}: GET", id);
+
+
+        try {
+            PostDetailResponseDTO dto = postService.getDetail(id);
+            return ResponseEntity.ok().body(dto); //문제가 없다면 이렇게 처리.
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
+    } // 게시물 개별 조회 END
+
+
+    @Operation(summary = "게시물 작성", description = "게시물 작성을 담당하는 메서드")
+    @Parameters(
+        {
+            @Parameter(name = "writer", description = "게시물의 작성자 이름을 쓰세요!", example = "김뽀삐", required = true),
+            @Parameter(name = "title", description = "게시물의 제목을 쓰세요!", example = "제목제목", required = true),
+            @Parameter(name = "content", description = "게시물의 내용을 쓰세요!", example = "내용내용"),
+            @Parameter(name = "hashTags", description = "게시물에 해시태그를 작성하세요!", example = "['하하', '호호']")
+        }
+    )
+    @PostMapping  //게시물 등록
+    public ResponseEntity<?> create(
+            @Validated @RequestBody PostCreateDTO dto
+            , BindingResult result //검증 에러 정보를 가진 객체
+            ){
+
+        log.info("/api/v1/posts: POST - payload: {}", dto);
+
+        if(dto == null){ //null이 왔다면
+            return ResponseEntity
+                    .badRequest()
+                    .body("등록 게시물 정보를 전달해 주세요!");
+        }
+        if(result.hasErrors()){ //입력값 검증에 걸림.
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            fieldErrors.forEach(err -> {
+                log.warn("invalid  client data - {}", err.toString());
+            });
+            return ResponseEntity
+                    .badRequest()
+                    .body(fieldErrors);
+        }
+
+        // if문을 전부 통과함.
+        try {
+            PostDetailResponseDTO responseDTO = postService.insert(dto);
+            return ResponseEntity
+                    .ok()
+                    .body(responseDTO);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .internalServerError()
+                    .body("서버 터졌어... 원인:"+e.getMessage());
+        }
+
+    } // 게시물 등록 END
+
+
+    // 게시물 수정
+    @RequestMapping( method = {RequestMethod.PATCH, RequestMethod.PUT})
+    public ResponseEntity<?> update(
+            @Validated @RequestBody PostModifyDTO dto,
+            BindingResult result){
+
+        log.info("/api/v1/posts {} - dto: {}");
+
+        ResponseEntity<List<FieldError>> fieldErrors = getValidateResult(result);
+        if (fieldErrors != null) return fieldErrors;
+
+        PostDetailResponseDTO responseDTO = postService.modify(dto);
+
+
+        return ResponseEntity.ok().body(responseDTO);
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable long id){
+        log.info("/api/v1/posts/{} DELETE!", id);
+
+        try {
+            postService.delete(id);
+            return ResponseEntity.ok("DEL SUCCESS!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
 
 
+
+
+    private static ResponseEntity<List<FieldError>> getValidateResult(BindingResult result) {
+        if(result.hasErrors()){ //입력값 검증에 걸림.
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            fieldErrors.forEach(err -> {
+                log.warn("invalid  client data - {}", err.toString());
+            });
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(fieldErrors);
+        }
+        return null;
+    }
 
 
 }

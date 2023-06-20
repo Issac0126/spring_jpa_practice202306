@@ -4,9 +4,9 @@ import lombok.*;
 
 import java.util.List;
 
-@Getter @Setter
+@Setter @Getter
 @ToString @EqualsAndHashCode
-@AllArgsConstructor @NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 @Builder
 public class PostListResponseDTO {
 

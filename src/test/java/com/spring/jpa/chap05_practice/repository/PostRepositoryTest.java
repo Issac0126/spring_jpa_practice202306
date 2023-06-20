@@ -20,7 +20,7 @@ class PostRepositoryTest {
     @Test
     @DisplayName("bulk insert")
     void bulkInsert() {
-        for (int i = 1; i < 378; i++) {
+        for (int i = 1; i <= 378; i++) {
             postRepository.save(
                     Post.builder()
                             .title("제목"+i)
